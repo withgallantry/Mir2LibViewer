@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/Bitmap-old.js"></script>
+    <script src="./bundle.js"></script>
+</head>
+<body>
+<canvas id="drawArea" width="400" height="400">
+
+</canvas>
+<script>
+    var mLibrary = new MLibrary("client/data/Magic.Lib");
+
+    mLibrary.load(function () {
+        console.log(this.currentVersion);
+        console.log(this.count);
+        console.log(this.indexList);
+
+        mLibrary.getImage(this.indexList[1202]);
+    }.bind(mLibrary));
+</script>
+</body>
+</html>

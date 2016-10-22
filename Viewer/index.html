@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mir .Lib Viewer</title>
+    <script src="../bundle.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script src="./js/clusterize.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+</head>
+<body>
+<div id="topBar">
+    <div id="file">
+        No file open
+    </div>
+
+    <input id="fileLoader" class="fileLoad" type="file" multiple="true"/>
+    <div id="stats">
+        <div id="count">
+            Image Count: -
+        </div>
+        <div class="inputs floatLeft">
+            <span class="inputs">X: <input id="x"/></span>
+            <span class="inputs">Y: <input id="y"/></span>
+        </div>
+        <div class="inputs floatLeft">
+            <span class="inputs">Shadow Y: <input id="shadowY"/></span>
+            <span class="inputs">Shadow X: <input id="shadowX"/></span>
+        </div>
+    </div>
+    <div id="loader">
+        <img src="./images/loader.gif"/>
+    </div>
+</div>
+<div id="bottomContainer">
+    <div id="leftBar">
+        <ul id="imagesInLib" class="clusterize-content">
+        </ul>
+    </div>
+
+    <div id="previewArea">
+        <div id="appendTarget">
+            <img id="previewImage"/>
+        </div>
+    </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

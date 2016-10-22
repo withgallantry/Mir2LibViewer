@@ -1,0 +1,124 @@
+html, body {
+    margin: 0;
+    font-family: 'Lato', sans-serif;
+    padding: 0;
+    background: #000;
+    color: white;
+}
+
+#file {
+    display: inline-block;
+    margin-top: 26px;
+    margin-left: 9px;
+}
+
+#leftBar {
+    cursor: pointer;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    top: 80px;
+    right: 14%;
+    width: 14%;
+    overflow: auto;
+}
+
+#loader {
+    margin-right: 4px;
+    float: right;
+    display: none;
+}
+
+#stats input {
+    background: #000;
+    color: white;
+    float: right;
+    margin-left: 4px;
+    margin-right: 2px;
+    margin-top: 2px;
+    border: 1px solid #6f6f6f;
+}
+
+#topBar {
+    width: 100%;
+    height: 80px;
+    position: fixed;
+    background-color: black;
+    top: 0;
+}
+
+#bottomContainer {
+    margin-top: 80px;
+    display: block;
+    width: auto;
+}
+
+#previewArea {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    top: 80px;
+    left: 14%;
+    background-color: #e4e1e1;
+    display: flex;
+}
+
+.fileLoad {
+    margin-left: 8px;
+}
+
+#stats {
+    float: right;
+    margin-right: 18px;
+    margin-top: 12px;
+}
+
+#stats .inputs {
+    display: block;
+}
+
+#stats .floatLeft {
+    float: left;
+    margin-right: 10px;
+}
+
+#appendTarget {
+    margin: 0 auto;
+    text-align: center;
+    align-self: center;
+}
+
+#imagesInLib {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    background: black;
+}
+
+.thumbnail {
+    cursor: pointer;
+    color: white;
+    border-bottom: 1px solid #1b1b1b;
+    display: flex;
+}
+
+.thumbnail .number {
+    width: 24px;
+    margin-right: 2px;
+    background: #1b1b1b;
+    text-align: center;
+    padding-top: 22px;
+    font-size: 12px;
+}
+
+.thumbnail canvas {
+    margin: 0 auto;
+}
+
+.thumbnail:hover .number {
+    background: #3a3a3a;
+}
+
+.thumbnail canvas {
+    height: 64px;
+}
