@@ -63,6 +63,10 @@ html, body {
     display: flex;
 }
 
+#previewImage {
+    width: 62%;
+}
+
 .fileLoad {
     margin-left: 8px;
 }
@@ -86,6 +90,7 @@ html, body {
     margin: 0 auto;
     text-align: center;
     align-self: center;
+    max-width: 88%;
 }
 
 #imagesInLib {

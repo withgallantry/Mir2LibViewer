@@ -2,7 +2,10 @@ var app = function () {
 
   this.images = [];
   this.curImageRangeMax = 51;
+  this.curIndex = 0;
   this.loadingPreviewImages = false;
+  this.mLibrary = [];
+
   this.listView = new Clusterize ({
     scrollId: 'leftBar',
     contentId: 'imagesInLib',
@@ -10,14 +13,14 @@ var app = function () {
       scrollingProgress: this.progressChange.bind (this)
     }
   });
-  this.mLibrary = [];
+
   this.DOM = {
     file: $ ('#file'),
-    previewImage : $('#previewImage'),
+    previewImage: $ ('#previewImage'),
     appendTarget: $ ('#appendTarget'),
     fileLoader: $ ('#fileLoader'),
     imageList: $ ('#imagesInLib'),
-    loader : $('#loader'),
+    loader: $ ('#loader'),
     stats: {
       count: $ ('#count'),
       x: $ ('#x'),
@@ -42,7 +45,7 @@ app.prototype.progressChange = function ( progress ) {
 }
 
 app.prototype.loadLibFromFile = function ( event ) {
-  this.DOM.loader.show();
+  this.DOM.loader.show ();
   var files = event.target.files;
   if (files.length > 0) {
 
@@ -74,11 +77,12 @@ app.prototype.onLibLoad = function () {
   this.listView.clear ();
   this.curImageRangeMax = 51;
   this.images = [];
-  this.DOM.stats.count.text('');
-  this.DOM.stats.x.val('');
-  this.DOM.stats.y.val('');
-  this.DOM.stats.shadowX.val('');
-  this.DOM.stats.shadowY.val('');
+  this.curIndex = 0;
+  this.DOM.stats.count.text ('');
+  this.DOM.stats.x.val ('');
+  this.DOM.stats.y.val ('');
+  this.DOM.stats.shadowX.val ('');
+  this.DOM.stats.shadowY.val ('');
   this.loadingPreivewImages = false;
   this.loadImageRange (0, 50);
 
@@ -104,40 +108,80 @@ app.prototype.loadImageRange = function ( begin, end ) {
 
   this.appendPreviewImages (updatedImages);
   this.loadingPreviewImages === false;
-  this.DOM.loader.hide();
+  this.DOM.loader.hide ();
+};
+
+app.prototype.showPreviewImage = function ( event ) {
+
+  var thumbnail = $ (event.target).is ('.thumbnail') ? $ (event.target) : $ (event.target).parents ('.thumbnail');
+  var canvas = thumbnail.find ('canvas');
+  if (canvas[0]) {
+    var idx = thumbnail.find ('.number').text ();
+    this.DOM.previewImage[0].src = canvas[0].toDataURL ();
+    this.curIndex = Number(idx);
+    this.updateImageStats (idx);
+  }
+
 };
 
 app.prototype.attachEventListeners = function () {
 
-  function showPreview ( event ) {
-    var thumbnail = $ (event.target).is ('.thumbnail') ? $ (event.target) : $ (event.target).parents ('.thumbnail');
-    var canvas = thumbnail.find ('canvas');
-    var idx = thumbnail.find ('.number').text();
-    this.DOM.previewImage[0].src = canvas[0].toDataURL();
+  this.DOM.imageList.hover (function () {
+    this.focus ();
+  }, function () {
+    this.blur ();
+  }).keydown (function ( e ) {
+    if (e.keyCode === 40) {
+      this.selectNextInImageList (this.curIndex);
+    }
+    if (e.keyCode === 38) {
+      this.selectPreviousInImageList (this.curIndex);
+    }
+  }.bind (this));
 
-
-    this.updateImageStats (idx);
-  }
-
-  this.DOM.imageList.on ('click', showPreview.bind (this));
+  this.DOM.imageList.on ('click', this.showPreviewImage.bind (this));
   this.DOM.fileLoader.on ('change', this.loadLibFromFile.bind (this));
 };
 
-app.prototype.updateImageStats = function ( idx ) {
-  var image = this.mLibrary.getImage(idx);
-  this.DOM.stats.x.val(image.layer1.x);
-  this.DOM.stats.y.val(image.layer1.y);
-  this.DOM.stats.shadowX.val(image.layer1.shadowX);
-  this.DOM.stats.shadowY.val(image.layer1.shadowY);
+app.prototype.selectNextInImageList = function ( idx ) {
+  var nextIdx = idx + 1 > this.mLibrary.count ? this.mLibrary.count : idx + 1;
+  var next = $ (".thumbnail .number:contains('" + (idx + 1) + "')")
+    .filter (function ( index ) {
+      return $ (this).text () == nextIdx;
+    });
+
+  this.showPreviewImage ({ target: next[0] });
+  $(next).focus();
+  this.curIndex = nextIdx;
 };
 
-app.prototype.renderListCanvas = function() {
-  var thumbnails = this.DOM.imageList.find('.thumbnail');
-  thumbnails.each(function(index, thumb) {
-    var idx = $(thumb).find('.number').text();
+app.prototype.selectPreviousInImageList = function ( idx ) {
+  var prevIdx = idx - 1 < 0 ? 0 : idx - 1;
+  var prev = $ (".thumbnail .number:contains('" + (prevIdx) + "')")
+    .filter (function ( index ) {
+      return $ (this).text () == prevIdx;
+    });
+
+  this.showPreviewImage ({ target: prev[0] });
+  $(prev).focus();
+  this.curIndex = prevIdx;
+};
+
+app.prototype.updateImageStats = function ( idx ) {
+  var image = this.mLibrary.getImage (idx);
+  this.DOM.stats.x.val (image.layer1.x);
+  this.DOM.stats.y.val (image.layer1.y);
+  this.DOM.stats.shadowX.val (image.layer1.shadowX);
+  this.DOM.stats.shadowY.val (image.layer1.shadowY);
+};
+
+app.prototype.renderListCanvas = function () {
+  var thumbnails = this.DOM.imageList.find ('.thumbnail');
+  thumbnails.each (function ( index, thumb ) {
+    var idx = $ (thumb).find ('.number').text ();
     var image = this.images[idx];
-    $(thumb).find('canvas').replaceWith(image);
-  }.bind(this));
+    $ (thumb).find ('canvas').replaceWith (image);
+  }.bind (this));
 };
 
 app.prototype.appendPreviewImages = function ( images ) {
@@ -145,12 +189,12 @@ app.prototype.appendPreviewImages = function ( images ) {
   var toAppend = [];
 
   images.forEach (function ( item ) {
-    var $newContent = $ ('<li class="thumbnail"><div class="number"><span>' + item.index + '</span></div><canvas></canvas></li>');
+    var $newContent = $ ('<li class="thumbnail" tabindex="0"><div class="number"><span>' + item.index + '</span></div><canvas></canvas></li>');
     toAppend.push ($newContent[0]);
   });
 
   this.listView.append (toAppend);
-  this.renderListCanvas();
+  this.renderListCanvas ();
 };
 
 var App = new app ();
