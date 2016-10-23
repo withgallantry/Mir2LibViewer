@@ -6,16 +6,9 @@ var app = function () {
   this.loadingPreviewImages = false;
   this.mLibrary = [];
 
-  this.listView = new Clusterize ({
-    scrollId: 'leftBar',
-    contentId: 'imagesInLib',
-    callbacks: {
-      scrollingProgress: this.progressChange.bind (this)
-    }
-  });
-
   this.DOM = {
     file: $ ('#file'),
+    leftBar: $ ('#leftBar'),
     previewImage: $ ('#previewImage'),
     appendTarget: $ ('#appendTarget'),
     fileLoader: $ ('#fileLoader'),
@@ -33,7 +26,10 @@ var app = function () {
   this.attachEventListeners ();
 };
 
-app.prototype.progressChange = function ( progress ) {
+app.prototype.progressChange = function ( event ) {
+
+  var progress = (this.DOM.leftBar[0].scrollTop / this.DOM.leftBar[0].scrollHeight) * 100;
+
   if (progress > 40) {
     if (this.loadingPreviewImages === false) {
       this.loadingPreivewImages = true;
@@ -74,7 +70,8 @@ app.prototype.clearImagePreviewList = function () {
 };
 
 app.prototype.onLibLoad = function () {
-  this.listView.clear ();
+  // this.listView.clear ();
+  this.DOM.imageList.html ('');
   this.curImageRangeMax = 51;
   this.images = [];
   this.curIndex = 0;
@@ -114,12 +111,15 @@ app.prototype.loadImageRange = function ( begin, end ) {
 app.prototype.showPreviewImage = function ( event ) {
 
   var thumbnail = $ (event.target).is ('.thumbnail') ? $ (event.target) : $ (event.target).parents ('.thumbnail');
+  thumbnail.focus();
   var canvas = thumbnail.find ('canvas');
   if (canvas[0]) {
     var idx = thumbnail.find ('.number').text ();
     this.DOM.previewImage[0].src = canvas[0].toDataURL ();
-    this.curIndex = Number(idx);
+    this.curIndex = Number (idx);
     this.updateImageStats (idx);
+  } else {
+    this.DOM.previewImage[0].src = "";
   }
 
 };
@@ -133,14 +133,17 @@ app.prototype.attachEventListeners = function () {
   }).keydown (function ( e ) {
     if (e.keyCode === 40) {
       this.selectNextInImageList (this.curIndex);
+      e.preventDefault();
     }
     if (e.keyCode === 38) {
       this.selectPreviousInImageList (this.curIndex);
+      e.preventDefault();
     }
   }.bind (this));
 
   this.DOM.imageList.on ('click', this.showPreviewImage.bind (this));
   this.DOM.fileLoader.on ('change', this.loadLibFromFile.bind (this));
+  this.DOM.leftBar.on ('scroll', this.progressChange.bind (this));
 };
 
 app.prototype.selectNextInImageList = function ( idx ) {
@@ -151,7 +154,7 @@ app.prototype.selectNextInImageList = function ( idx ) {
     });
 
   this.showPreviewImage ({ target: next[0] });
-  $(next).focus();
+  this.DOM.leftBar[0].scrollTop = $ (next).parents('.thumbnail')[0].offsetTop;
   this.curIndex = nextIdx;
 };
 
@@ -163,7 +166,7 @@ app.prototype.selectPreviousInImageList = function ( idx ) {
     });
 
   this.showPreviewImage ({ target: prev[0] });
-  $(prev).focus();
+  this.DOM.leftBar[0].scrollTop = $ (prev).parents('.thumbnail')[0].offsetTop;
   this.curIndex = prevIdx;
 };
 
@@ -186,14 +189,11 @@ app.prototype.renderListCanvas = function () {
 
 app.prototype.appendPreviewImages = function ( images ) {
 
-  var toAppend = [];
-
   images.forEach (function ( item ) {
     var $newContent = $ ('<li class="thumbnail" tabindex="0"><div class="number"><span>' + item.index + '</span></div><canvas></canvas></li>');
-    toAppend.push ($newContent[0]);
-  });
+    this.DOM.imageList.append ($newContent);
+  }.bind (this));
 
-  this.listView.append (toAppend);
   this.renderListCanvas ();
 };
 
